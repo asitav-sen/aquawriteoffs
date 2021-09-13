@@ -247,7 +247,74 @@ inactive_bp_data<-
   filter(!active)%>%
   select(3:4)%>%unique()
 
+# Now I will identify the business partners who have only active account, only inactive accounts, both active and inactive accounts. I will do that by joining the active and inactive contracts table using the business partner id as the common key.
+
+bp_status<-
+active_bp_data%>%
+  full_join(inactive_bp_data, by="business_partner", suffix=c(".active",".inactive"))%>%
+    mutate(status= case_when(
+    is.na(bp_category.active) & !is.na(bp_category.inactive) ~ "Only Inactive",
+    !is.na(bp_category.active) & is.na(bp_category.inactive) ~ "Only Active",
+    !is.na(bp_category.active) & !is.na(bp_category.inactive) ~ "Both Active and Inactive"
+  )
+  )%>%
+  mutate(bp_category=ifelse(is.na(bp_category.active), as.character(bp_category.inactive), as.character(bp_category.active)))%>%
+   select(1,5,4)
+
+
+
+# Now I will join the above data with the contracts table. So, the contracts table will now have information about whether the contract belongs to a business partner with just active account, just inactive account or both.
+ contracts<-
+ contracts%>%
+   left_join(bp_status, by="business_partner")%>%
+   select(-bp_category.y)%>%
+   rename(bp_category=bp_category.x)
+ 
+ # Similarly, we create another data set with business partner details and indication on the whether the business partner has only active, only inactive or both types of contracts.
+  bp_full<-
+ contracts%>%
+   select(business_partner,bp_category, bp_org_start,
+          bp_liquidation, bp_title, bp_gender, bp_marital, bp_job, bp_dob, bp_dod, bp_nationality,
+          bp_legalform, bp_legalentity, bp_industry, bp_accclass, bp_collecstrategy,
+          bp_lock_dunning, penalty_waiver_code, special_handling_code, bp_phone, bp_email,
+          bp_comm_method, building_no, room_no, street, house_no, region)%>%
+   left_join(bp_status, by="business_partner")
+# We also add that information in the open item data.
+oi<-
+ contracts%>%
+   select(2,3,4, 41, 42)%>%
+   right_join(oi, by=c("contract_account"="contract_id"))
+
+# Checking whether the contract acounts in the contracts and open item data set are same
+setdiff(unique(oi$contract_id), unique(contracts$contract_account))
 ```
+
+Now open items and master data are cleaned.
+
+
+```{r}
+bp_full%>%
+  mutate(bp_phone=ifelse(bp_phone=="X",T,F), bp_email=ifelse(bp_email=="X",T,F),
+         address=tolower(paste(building_no,room_no, street, house_no, region, sep = "_")))%>%
+  select(business_partner,bp_category.x, bp_phone, bp_email, address)%>%
+  rename(bp_category=bp_category.x)%>%
+  group_by(business_partner, bp_category)%>%
+  summarise(bp_phone=sum(bp_phone), bp_email=sum(bp_email), address=paste(address, sep="/"))%>%
+  unique()%>%
+  ungroup()%>%
+  mutate(multiple_address=ifelse(grepl(pattern="/",x=address), T, F))
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
