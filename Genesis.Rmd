@@ -1,0 +1,257 @@
+---
+title: "Genesis"
+author: "Scary, The scary Scarecrow"
+date: "13/9/2021"
+output: html_document
+---
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri("logosmall.png"), 
+               alt = 'logo', 
+               style = 'position:absolute; top:1; right:0; padding:10px;')
+```
+
+------------------------------------------------------------------------
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+library(tidyverse)
+library(lubridate)
+library(fst)
+#library(RPostgres)
+library(DT)
+
+get_png <- function(filename) {
+  grid::rasterGrob(png::readPNG(filename), interpolate = TRUE)
+}
+l <- get_png("logo.png")
+sum.na<-function(x){sum(is.na(x))}
+
+id<-read.csv("id.csv", sep=";")
+```
+
+
+## Data cleaning while importing
+
+### Contracts data 
+
+```{r}
+ma<-read.csv("ma.csv", sep=";", quote = "")
+head(ma)
+```
+Headers missing!!! Need to add the column names manually.
+
+
+```{r}
+rm(ma) # Removing ma to save memory
+ contracts <- read.csv("ma.csv", sep=";", dec=",", col.names = c(
+ "sap_client",
+ "contract_account",
+ "business_partner",
+ "bp_category",
+ "bp_org_start",
+ "bp_liquidation",
+ "bp_title",
+ "bp_gender",
+ "bp_marital",
+ "bp_job",
+ "bp_dob",
+ "bp_dod",
+ "bp_nationality",
+ "bp_legalform",
+ "bp_legalentity",
+ "bp_industry",
+ "bp_accclass",
+ "bp_collecstrategy",
+ "record_date",
+ "additional_days_cash_management",
+ "process_lock_till",
+ "direct_debit_limit",
+ "no_of_months_debit_limit",
+ "invoice_cycle_start",
+ "incoming_payment_method",
+ "lock_reason_incoming_payment",
+ "dunning_procedure",
+ "corresp_dunning_pro",
+ "bp_lock_dunning",
+ "penalty_waiver_code",
+ "special_handling_code",
+ "bp_phone",
+ "bp_email",
+ "bp_comm_method",
+ "building_no",
+ "room_no",
+ "street",
+ "house_no",
+ "street_upper_case",
+ "region",
+ "active"
+  ), quote = "")
+ 
+ head(contracts)
+```
+
+Several formatting issues observed. Will note them down as I reformat the columns.
+
+```{r}
+ contracts<-
+ contracts%>%
+   mutate(bp_category=as.factor(bp_category))%>%       #Business partner should be a factor
+   mutate(bp_org_start=as.POSIXct(bp_category,tz="America/Curacao",format="%d.%m.%Y"))%>% #Start date should be a date (and not character)
+   mutate(business_partner=as.character(business_partner))%>%  # Business partner ID should be a character
+   mutate(contract_account=as.character(contract_account))%>% # Same with contract id
+   mutate(bp_liquidation=as.POSIXct(bp_liquidation,tz="America/Curacao",format="%d.%m.%Y"))%>% # liquidation date should be date
+   mutate(bp_title=as.factor(bp_title))%>% # Business partner title should be a factor
+   mutate(bp_gender=as.factor(bp_gender))%>% # Gender should be a factor
+   mutate(bp_marital=as.factor(bp_marital))%>% # Marital status should be factor
+   mutate(bp_job=as.character(bp_job))%>%  # Job should be a character
+   mutate(bp_dob=as.POSIXct(bp_dob,tz="America/Curacao",format="%d.%m.%Y"))%>% #Date of birth should be a date
+   mutate(bp_dod=as.POSIXct(bp_dod,tz="America/Curacao",format="%d.%m.%Y"))%>% #Date of demise should be a date
+   mutate(bp_nationality=as.character(bp_nationality))%>% # Nationality should be a character
+   mutate(bp_legalform=as.factor(bp_legalform))%>% # Legal form should be a factor
+   mutate(bp_legalentity=as.character(bp_legalentity))%>% # Legal entity should be a factor
+   mutate(bp_industry=as.factor(bp_industry))%>% # Industry should be a factor
+   mutate(bp_accclass=as.factor(bp_accclass))%>% # Class of account should be factor
+   mutate(bp_collecstrategy=as.factor(bp_collecstrategy))%>% # Collection strategy should be a factor
+   mutate(record_date=as.POSIXct(record_date,tz="America/Curacao",format="%d.%m.%Y"))%>% # Date should be date
+   mutate(additional_days_cash_management=as.integer(additional_days_cash_management))%>% # Additional days shuould be an integer, since it is no. of days
+   mutate(direct_debit_limit=as.numeric(direct_debit_limit))%>% # Debit limit should be numeric
+   mutate(process_lock_till=as.POSIXct(process_lock_till,tz="America/Curacao",
+                                       format="%d.%m.%Y"))%>% # Until indicates date or time. Here date.
+   mutate(no_of_months_debit_limit=as.numeric(no_of_months_debit_limit))%>% # number of months should be numeric
+   mutate(invoice_cycle_start=as.POSIXct(invoice_cycle_start,tz="America/Curacao",
+                                         format="%d.%m.%Y"))%>% # Invoice cycle start date should be date
+   mutate(incoming_payment_method=as.factor(incoming_payment_method))%>% # Incoming payment method should be factor
+   mutate(lock_reason_incoming_payment=as.factor(lock_reason_incoming_payment))%>% # Lock reason should be factor
+   mutate(dunning_procedure=as.factor(dunning_procedure))%>% # Dunning procedure should be factor
+   mutate(corresp_dunning_pro=as.factor(corresp_dunning_pro))%>% # Should be factor
+   mutate(bp_lock_dunning=as.character(bp_lock_dunning))%>% # Should be character
+   mutate(penalty_waiver_code=as.character(penalty_waiver_code))%>% # should be factor/character
+   mutate(special_handling_code=as.character(special_handling_code))%>% # Should be character/factor
+   mutate(bp_phone=as.character(bp_phone))%>% # Needs to be in character else will show in decimals etc.
+   mutate(bp_email=as.character(bp_email))%>% # Should be character
+   mutate(bp_comm_method=as.factor(bp_comm_method))%>% # Should be factor
+   mutate(building_no=as.character(building_no))%>% # Should be character
+   mutate(room_no=as.factor(room_no))%>%  # using factor because this column is used to identify area, confirmed by Rigo
+   mutate(street=as.character(street))%>% # Should be as character
+   mutate(house_no=as.character(house_no))%>% # Should be character
+   mutate(street_upper_case=as.character(street_upper_case))%>% # Should be character
+   mutate(region=as.factor(region))%>% # Should be factor
+   mutate(active=ifelse(active=="X",T,F)) # Changed to logical using T and F instead of X
+
+head(contracts)
+```
+
+### Open items
+
+```{r}
+op<-read.csv("op.csv", sep=";")
+head(op)
+```
+
+Similar to last section the column names need to be added manually.
+Moreover some of the values are coded (For e.g. )
+
+```{r}
+rm(op) #removing op
+
+oi<-read.csv("op.csv", sep=";", quote = "",
+             col.names = c(
+               "sap_client",
+               "contract_id",
+               "main_tran",
+               "sub_tran",
+               "contract_type",
+               "division",
+               "deposit",
+               "doc_date",
+               "post_date",
+               "currency",
+               "due_date",
+               "dunn_exclu",
+               "amount",
+               "payment_meth",
+               "clearing_date",
+               "clearing_post_date",
+               "clearing_reason",
+               "document_type"
+             ))
+# Since some of the columns are coded (for e.g. 001 for migration), we need to add the corresponding text. To do that, some documents have been created with the codes and their corresponding name/text. These data will be matched with the open items data.
+doc_type<-read.csv("documenttypes.csv")
+tran_type<-read.csv("trantype.csv")
+tran_type<-
+tran_type%>%
+  mutate(trantype=paste0(HVORG,"_",TVORG))%>% # Joining the two columns for easier matching with open items data.
+  select(c(4,3))%>%
+  rename(trandesc=TXT30)  # Renaming a column to human readable
+# unique(oi$dunn_exclu)
+
+
+oi<-
+  oi%>%
+  mutate(contract_id=as.character(contract_id))%>%  # Contract ID needs to be character. We also need to match the format with the contracts table, in case we join the tables later.
+  mutate(main_tran=as.factor(main_tran))%>%  # Main transaction code should be factor, not number
+  mutate(sub_tran=as.factor(sub_tran))%>% # Sub transaction n=code should be factor, not number
+  mutate(contract_type=as.factor(contract_type))%>% # Contract type should be factor
+  mutate(division=as.factor(division))%>%  # Division should be factor
+  mutate(deposit=ifelse(deposit=="X",T,F))%>% # Converting deposit to logical T/F instead of X and not
+  mutate(doc_date=dmy(doc_date))%>% # Date should be date
+  mutate(post_date=dmy(post_date))%>% # Date should be date
+  mutate(due_date=dmy(due_date))%>% #Date should be date
+  mutate(payment_meth=as.factor(payment_meth))%>% # payment method should be factor
+  mutate(clearing_date=dmy(clearing_date))%>% # Date should be in date format
+  mutate(clearing_post_date=dmy(clearing_post_date))%>% # Date should be in date format
+  mutate(clearing_reason=as.factor(clearing_reason))%>% # Clearing reason should be factor
+  mutate(document_type=as.factor(document_type)) # document type should be factor
+ 
+# The amount column has some issues. Firstly the decimal demarker is comma. It did not convert into number despite mentioning while importing that decimal demarer is comma. That is because there is a "-" after the digits if the number is negative and R took it as text. So, now, I will resolve this issue.
+oi<-  
+oi%>%
+  mutate(negative=ifelse(grepl(pattern="-$",x=amount),T,F))%>% # Create a column to mark negative transactions by identifying pattern in amount (ending with "-")
+  mutate(amount=gsub(pattern="[^0-9\\,]",replacement = "", x=amount))%>% # Removing all the commas that are not used as decimal demarker
+  mutate(amount=gsub(pattern="[,]",replacement = ".", x=amount))%>% # Replacing the decimal demarker comma with point
+  mutate(amount=as.numeric(amount))%>% # Converting to numeric
+  mutate(amount=ifelse(negative,amount*-1,amount)) # If negative marked then changing sign of amount
+# Now the coded columns will be filled with actual value 
+oi<-
+  oi%>%
+  mutate(contract_type=case_when(
+    contract_type == "1" ~ "Residential",
+    contract_type == "2" ~ "Commercial",
+    contract_type == "3" ~ "Industrial",
+    contract_type == "4" ~ "Street Light",
+    contract_type == "5" ~ "Government",
+    contract_type == "6" ~ "Own",
+    contract_type == "7" ~ "Waste"
+  ))%>% # Contract type changed manually
+  left_join(doc_type, by=c("document_type"="Document.Type"))%>% # For document type, joined the corresponding table
+  rename(documen_desc=Description) # Renamed the column for convenience
+
+# Did similar thing for transaction type
+oi<-  
+oi%>%
+    mutate(trantype=paste0(main_tran,"_",sub_tran))%>% 
+    left_join(tran_type, by="trantype")
+
+# Now from the contracts data, we prepare a list of active and inactive contracts
+active_bp_data<-
+  contracts%>%
+  filter(active)%>%
+  select(3:4)%>%unique()
+inactive_bp_data<-
+  contracts%>%
+  filter(!active)%>%
+  select(3:4)%>%unique()
+
+```
+
+
+
+
+
+
+

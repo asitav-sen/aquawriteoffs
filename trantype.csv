@@ -1,0 +1,238 @@
+﻿HVORG,TVORG,TXT30
+0010,0010,Charges Debit
+0010,0020,Reconnection Charges Debit
+0010,0050,LPC for items in Inst. Plan
+0010,0060,LPC from invoicing
+0020,0010,Cash Sec Deposit Payment
+0020,0020,Cash Sec Deposit Request
+0025,0010,Interest for Cash Sec Deposit
+0040,0010,Interest Request (Statistical)
+0040,0020,Interest Receivable
+0040,0030,Interest credit memo
+0040,0040,Interest for Installment Plan
+0040,0050,Instl. Plan:Inter Credit Memo
+0040,0060,Loan Interest
+0050,,Budget Billing Statistics
+0050,0110,BB Request - credit
+0050,0120,Extrap.Budget Bill. Plan (Dr)
+0051,,Budget Billing: Partial Bill
+0052,,Budget Billing: Payment Plan
+0052,0110,Extrap.Budget Bill. Plan (Cr)
+0052,0120,Extrap.Budget Bill. Plan (Dr)
+0053,,Budget Billing: Payment Scheme
+0060,0010,Pay_OnAccount (Cr)_Aqua
+0060,0012,Pay_OnAccount (Cr)-_Waste
+0060,0020,Pay_OnAccount (Db)_Aqua
+0060,0022,Pay_OnAccount (Db)_Waste
+0070,0010,Return charges (Dr)
+0070,0020,Return charg. stat. receiv
+0070,0021,Return charge stat. receiv. 2
+0075,0010,Collective Bill Request
+0075,0011,Collective Bill Request
+0075,0012,Collective Bill: PartBill Req.
+0075,0013,Coll.Bill: Budget Billing Req.
+0075,0020,Collective Bill Payment
+0075,0021,Coll. Bill: Credit Bill
+0075,0022,Coll. Bill:Credit Partial Bill
+0075,0023,Coll. Bill:BB Payment Request
+0075,0030,CB Request Interest
+0075,0040,CB Credit Interest
+0075,0050,CB Req.security deposit req.
+0075,0070,CB Req Down Payment Request
+0080,0010,Installmnent (Dr)
+0080,0020,Installment Plan Charges
+0080,0090,Payment Schema: Installment
+0085,0010,Receivable (for repaymnt plan)
+0085,0020,Credit Memo for Payment
+0090,0010,write-off (Cr)
+0090,0020,write-off (Dr)
+0095,0010,Mass write-off (Cr)
+0095,0020,Mass Write Off (Dr)
+0100,0001,Consumption Charges (Cr)
+0100,0002,Consumption Charges (Dr)
+0100,0010,Consumption Charges (Cr)
+0100,0011,Minimum Charges (Cr)
+0100,0012,Waste Disposal Charge (Cr)
+0100,0013,Feed-In charge (Cr)
+0100,0014,Stand By charges  (Cr)
+0100,0015,Meter Rent (Cr)
+0100,0020,Consumption Charges (Dr)
+0100,0021,Minimum Charges (Dr)
+0100,0022,Waste Disposal Charge (Dr)
+0100,0023,Feed-In charge (Dr)
+0100,0024,Stand By charges (Dr)
+0100,0025,Meter Rent (Dr)
+0150,0010,Payment Plan Balance Fwd Credt
+0150,0020,Payment Plan Balance Fwd Debit
+0150,0110,Payment Plan Adjustment Credit
+0150,0120,Payment Plan Adjustment Debit
+0200,0001,Final Bill Consm.Charges (Cr)
+0200,0002,Final Bill Consm.Charges (Dr)
+0200,0010,Final Bill Consm.Charges (Cr)
+0200,0011,Final Bill.Minimum Charges (Cr
+0200,0012,FB.Waste Disposal Charges (Cr)
+0200,0013,FB Feed-In charge (Cr)
+0200,0014,FB Stand By charges (Cr)
+0200,0015,FB Meter Rent (Cr)
+0200,0020,Final Bill Consm Charges (Dr)
+0200,0021,Final Bill Minimum Charge (Dr)
+0200,0022,FB.Waste Disposal Chage (Dr)
+0200,0023,FB Feed-In charge (Dr)
+0200,0024,FB Stand By charges (Dr)
+0200,0025,FB Meter Rent (Dr)
+0250,0010,Deposit Released in Inv
+0250,0020,Rec. from Trans. Post. Inv.
+0300,0001,MB Consum Charges (Cr)
+0300,0002,MB Consum Charges (Dr)
+0300,0004,MBDamage master fuse (Cr)
+0300,0005,MB Removal Cost (Cr)
+0300,0006,MB Unregistered Consumpt (Cr)
+0300,0010,MB Consumption Charges (Cr)
+0300,0011,MB Minimum Charges (Cr)
+0300,0012,MB Waste Disposal Charge (Cr)
+0300,0013,MB Feed-In charge (Cr)
+0300,0014,MB Stand By charges (Cr)
+0300,0015,MB Meter Rent (Cr)
+0300,0017,MB Cost Broken Seal (Cr)
+0300,0018,MB Cost Meter Damage (Cr)
+0300,0019,MB Fine according to Art.27 Cr
+0300,0020,MB Consumption Charges (Dr)
+0300,0021,MB Minimum Charges (Dr)
+0300,0022,MB Waste Disposal Charge (Dr)
+0300,0023,MB Feed-In charge (Dr)
+0300,0024,MB Stand By charges (Dr)
+0300,0025,MB Meter Rent (Dr)
+0300,0027,MB Cost Broken Seal (Dr)
+0300,0028,MB Cost Meter Damage (Dr)
+0300,0029,MB Fine According Art.27 (Dr)
+0300,0030,MB Damage on Master fuse box D
+0300,0031,MB Removal Cost (Dr)
+0300,0032,MB Unregistered Consumpt (Dr)
+0300,0050,Partial Exoneration of Debt-Cr
+0300,0055,Partial Exoneration of Debt-Dr
+0300,TCEC,Tariff correction - Elect (Cr)
+0300,TCED,Tariff correction - Elect (Dr)
+0300,TCWC,Tariff correction - Water (Cr)
+0300,TCWD,Tariff correction - Water (Dr)
+0600,0010,Incoming payment
+0600,0012,Waste_incom_payment
+0600,0020,Outgoing payment
+0600,0022,Waste_outg_payment
+0600,0030,Clearing reset
+0600,0040,Reversal
+0600,0070,Reversal after return
+0605,0010,Reversal (Cr)
+0605,0012,Waste_reversal (Cr)
+0605,0020,Reversal (Dr)
+0605,0022,Waste_reversal (Db)
+0610,0010,Account Maintenance
+0610,0012,Waste_acc_maintenance
+0610,0020,Acc. maint. Invoicing
+0610,0022,Waste_acc_maintenance
+0610,0030,Charge off
+0610,0070,Charge off
+0615,0010,Returns
+0615,0012,Waste_returns
+0615,0020,Returns
+0615,0022,Aqua_returns
+0620,0010,Transfer posting (Cr)
+0620,0012,Waste_transfer posting (Cr)
+0620,0020,Transfer posting (Dr)
+0620,0022,Waste_transfer posting (Db)
+0625,0010,Reset Cleared Items (Cr)
+0625,0012,Waste_cleared item (Cr)
+0625,0020,Reset Cleared Items (Dr)
+0625,0022,Waste_cleared item (Db)
+0630,0010,Write-Off
+0630,0012,Waste_write off
+0630,0020,Credit Write-off
+0630,0022,Waste_write off (Cr)
+1015,0100,Transfer Credit
+3000,0010,Down payment request
+3000,0020,Down payment
+3000,0030,SD Request for Down Payment
+3000,0040,Down Payment at SD Request
+3000,0050,"Down Payment Info, Ind Cust"
+3000,0051,"Down Pmnt at Request, Ind Cust"
+3000,0120,Down Payment - Negative
+6000,0010,Miscellaneous Postings (Cr)
+6000,0020,Miscellaneous Postings (Dr)
+6000,0030,Migrated Transfer posting (Dr)
+6000,0031,Waste Tax Mig.Tran.Post (Dr)
+6000,0032,Mig Misc.Postings(Unbilled) Dr
+6000,0033,Mig W.Tax Posting(Unbilled) Dr
+6000,0035,Migrated Transfer posting (Cr)
+6000,0036,Waste Tax Mig.Tran.Post (Cr)
+6000,0037,Mig Misc.Postings(Unbilled) Cr
+6000,0038,Mig W.Tax Posting(Unbilled) Cr
+6000,0040,Web Discount (Cr)
+6000,0045,Web Discount (Dr)
+6000,0050,Partial Exoneration of Debt-Cr
+6000,0055,Partial Exoneration of Debt-Dr
+6000,0060,Blackout Compensation (Cr)
+6000,0065,Blackout Compensation (Dr)
+6005,0010,Adjustments (Cr)
+6005,0020,Adjustments (Dr)
+9100,0010,Donation: Inbound Payment
+9200,0010,Inbound Payment Credit
+9200,0020,Payment to Company
+9800,0010,SD Invoice (Cr)
+9800,0011,SD Dow.Invoice (Cr)
+9800,0020,SD Invoice (Dr)
+9800,0021,SD Dow.Invoice (Dr)
+EFCR,EFCC,Elec. Fin. Correction (Cr)
+EFCR,EFCD,Elec. Fin. Correction (Dr)
+REVD,0010,Revenue Distribution (Cr)
+REVD,0011,Waste Tax commission (Cr)
+REVD,0020,Revenue Distribution (Dr)
+REVD,0021,Waste Tax commission  (Dr)
+UNME,1001,Unmetered Electric Usage (Dr)
+UNME,1002,Unmetered Electric Usage (Cr)
+UNMW,2001,Unmetered Water Usage (Dr)
+UNMW,2002,Unmetered Water Usage (Cr)
+WFBI,WFBC,Waste Tax Final Charge (Cr)
+WFBI,WFBD,Waste Tax Final Charge (Dr)
+WFCR,WFCC,Water Fin. Correction (Cr)
+WFCR,WFCD,Water Fin. Correction (Dr)
+WMBI,WMBC,Waste Tax Manual Charge (Cr)
+WMBI,WMBD,Waste Tax Manual Charge (Dr)
+WPBI,WPBC,Waste Tax Periodic Charge (Cr)
+WPBI,WPBD,Waste Tax Periodic Charge (Dr)
+WSAF,WAFC,Waste Administration Fee (Cr)
+WSAF,WAFD,Waste Administration Fee (Dr)
+WSEX,WAVC,Waste - Govt.Pension (Cr)
+WSEX,WAVD,Waste - Govt.Pension (Dr)
+WSEX,WDZC,Waste - SOAW (Cr)
+WSEX,WDZD,Waste - SOAW (Dr)
+WSEX,WKNC,Waste - Construction (Cr)
+WSEX,WKND,Waste - Construction (Dr)
+WSEX,WKSC,Waste - Empty House(Cr)
+WSEX,WKSD,Waste - Empty House(Dr)
+WSEX,WTKC,Waste - Technical (Cr)
+WSEX,WTKD,Waste - Technical (Dr)
+WSPB,WSPC,Standing Order_Payback (Cr)
+WSPB,WSPD,Standing Order_Payback (Dr)
+WSRY,WSRC,Pay_OnAccount (Cr)-StandOrder
+WSRY,WSRD,Pay_OnAccount (Dr)-StandOrder
+ZPRT,Z001,Last Invoice Amount
+ZPRT,Z002,Last Waste Amount
+ZPRT,Z003,Installment Plan Total Amount
+ZPRT,Z004,Installment Plan Balance
+ZPRT,Z005,Security Deposit Paid
+ZPRT,Z006,Last Payment for Invoice
+ZPRT,Z007,Last Payment for Waste
+ZPRT,Z008,Open amount deactivated IP
+ZPRT,Z009,Financial Corrections Electra
+ZPRT,Z010,Financial Corrections Water
+ZPRT,Z011,Unmetered Electricity (Dr)
+ZPRT,Z012,Unmetered Electricity (Cr)
+ZPRT,Z013,Unmetered Water (Dr)
+ZPRT,Z014,Unmetered Water (Cr)
+ZPRT,Z015,Sec. Deposit paid
+ZPRT,Z016,Sec. Dep released & cleared
+ZPRT,Z017,Rejected Payment - AQUA
+ZPRT,Z018,Rejected Payment - WASTE
+ZPRT,Z019,Refunded Payment - AQUA
+ZPRT,Z020,Refunded Payment - WASTE
+ZPRT,Z021,Future Installment Plan Amount
+ZPRT,Z022,Unrestricted & Cleared Instlmn
