@@ -2,7 +2,11 @@
 title: "Genesis"
 author: "Scary, The scary Scarecrow"
 date: "13/9/2021"
-output: html_document
+output: 
+  html_document: 
+    code_hide: yes
+    theme: lumen
+    keep_md: yes
 ---
 
 ```{r, echo=FALSE}
@@ -24,6 +28,9 @@ library(lubridate)
 library(fst)
 #library(RPostgres)
 library(DT)
+library(data.table)
+library(downloadthis)
+
 
 get_png <- function(filename) {
   grid::rasterGrob(png::readPNG(filename), interpolate = TRUE)
@@ -35,7 +42,7 @@ id<-read.csv("id.csv", sep=";")
 ```
 
 
-## Data cleaning while importing
+## Data cleaning
 
 ### Contracts data 
 
@@ -90,7 +97,7 @@ rm(ma) # Removing ma to save memory
  "street_upper_case",
  "region",
  "active"
-  ), quote = "")
+  ), quote = "", header = F)
  
  head(contracts)
 ```
@@ -159,7 +166,7 @@ Moreover some of the values are coded (For e.g. )
 ```{r}
 rm(op) #removing op
 
-oi<-read.csv("op.csv", sep=";", quote = "",
+oi<-read.csv("op.csv", sep=";", quote = "", header = F,
              col.names = c(
                "sap_client",
                "contract_id",
@@ -236,6 +243,7 @@ oi<-
 oi%>%
     mutate(trantype=paste0(main_tran,"_",sub_tran))%>% 
     left_join(tran_type, by="trantype")
+ 
 
 # Now from the contracts data, we prepare a list of active and inactive contracts
 active_bp_data<-
@@ -255,7 +263,8 @@ active_bp_data%>%
     mutate(status= case_when(
     is.na(bp_category.active) & !is.na(bp_category.inactive) ~ "Only Inactive",
     !is.na(bp_category.active) & is.na(bp_category.inactive) ~ "Only Active",
-    !is.na(bp_category.active) & !is.na(bp_category.inactive) ~ "Both Active and Inactive"
+    !is.na(bp_category.active) & !is.na(bp_category.inactive) ~ "Both Active and Inactive",
+    TRUE ~ "Not Sure"
   )
   )%>%
   mutate(bp_category=ifelse(is.na(bp_category.active), as.character(bp_category.inactive), as.character(bp_category.active)))%>%
@@ -271,7 +280,7 @@ active_bp_data%>%
    rename(bp_category=bp_category.x)
  
  # Similarly, we create another data set with business partner details and indication on the whether the business partner has only active, only inactive or both types of contracts.
-  bp_full<-
+bp_full<-
  contracts%>%
    select(business_partner,bp_category, bp_org_start,
           bp_liquidation, bp_title, bp_gender, bp_marital, bp_job, bp_dob, bp_dod, bp_nationality,
@@ -279,15 +288,35 @@ active_bp_data%>%
           bp_lock_dunning, penalty_waiver_code, special_handling_code, bp_phone, bp_email,
           bp_comm_method, building_no, room_no, street, house_no, region)%>%
    left_join(bp_status, by="business_partner")
-# We also add that information in the open item data.
+
+# Checking whether the unique business partners match in bp_status and contracts
+setdiff(unique(bp_status$business_partner), unique(contracts$business_partner))
+
+# Checking whether the contract accounts in the contracts and open item data set are same
+setdiff(unique(oi$contract_id), unique(contracts$contract_account))
+
+```
+
+
+```{r}
+# Checking if the active and inactive bp data set hs all the business partners that contract dataset has.
+setdiff(unique(c(active_bp_data$business_partner,inactive_bp_data$business_partner)),unique(contracts$business_partner))
+```
+
+
+**Looks like the contracts accounts in open items data and contracts data do not match exactly. i.e. there are some contracts in open items data that does not exist in contract account.**
+
+So, we will ignore those contract ids while joining the information related to business partner status in the open items data.
+
+```{r}
+# We also add business partner status information in open items data
 oi<-
  contracts%>%
    select(2,3,4, 41, 42)%>%
-   right_join(oi, by=c("contract_account"="contract_id"))
-
-# Checking whether the contract acounts in the contracts and open item data set are same
-setdiff(unique(oi$contract_id), unique(contracts$contract_account))
+   inner_join(oi, by=c("contract_account"="contract_id"))
 ```
+
+
 
 Now open items and master data are cleaned.
 
@@ -305,6 +334,96 @@ bp_full%>%
   mutate(multiple_address=ifelse(grepl(pattern="/",x=address), T, F))
 ```
 
+## Analysis
+
+
+### Step 0
+
+Adding the outstanding age
+
+```{r}
+oi<-
+  oi %>% 
+  mutate(OUT_AGE=as.numeric((today()-due_date)))%>%
+  mutate(AGE_BUCKET=factor(case_when(
+    OUT_AGE<= 0 ~ "in future",
+    OUT_AGE<= 30 ~ "0-30 days",
+    OUT_AGE<= 60 ~ "31-60 days",
+    OUT_AGE<= 90 ~ "61-90 days",
+    OUT_AGE<= 180 ~ "91-180 days",
+    OUT_AGE<= 365 ~ "181-365 days",
+    OUT_AGE<= 730 ~ "1-2 years",
+    OUT_AGE<= 1095 ~ "2-3 years",
+    OUT_AGE<= 1460 ~ "3-4 years",
+    OUT_AGE<= 1825 ~ "4-5 years",
+    OUT_AGE> 1825 ~ "5+ years",
+  ), levels = c("in future","0-30 days","31-60 days", "61-90 days", "91-180 days", "181-365 days", "1-2 years", "2-3 years", "3-4 years", "4-5 years",
+                "5+ years")))
+```
+
+Identifying transactions that are deposits, Installments, waste or other (real)
+```{r}
+oi<-
+  oi%>%
+   mutate(o.type= case_when(
+    deposit == T ~ "Deposit",
+    documen_desc == "Installments" ~ "Installments",
+    contract_type=="Waste" | grepl("Waste",trandesc) ~ "Waste",
+    TRUE ~ "Real"
+  ))
+```
+
+
+Usually, the installments should be due in future. So, Will filter out transactions that are in future. 
+After that, the transactions marked as installments must be actual outstanding.
+Then will also filter out waste. 
+
+```{r}
+oi<-
+  oi %>% 
+  filter(OUT_AGE!="in future") %>% 
+  filter(o.type !="Waste")
+  
+```
+
+Deposits need a separate treatment and should not be included in the transaction.
+
+```{r}
+oi<-oi %>% 
+  filter(o.type !="Deposit")
+deposits<-oi %>% 
+  filter(o.type =="Deposit")
+```
+
+
+### List of contracts with inactive business partners
+
+The list can be downloaded from below.
+
+```{r}
+allinactive<-oi %>% 
+  filter(status=="Only Inactive") 
+allinactive %>% 
+download_this(
+    button_label = "Download Inactive",
+    button_type = "primary",
+    output_extension = ".xlsx",
+    has_icon = TRUE,
+    icon = "fa fa-save",
+    self_contained=T)
+```
+
+
+### Identify >5 years outstanding
+
+
+```{r}
+fiveplus<-oi %>% 
+  filter(AGE_BUCKET=="5+ years") # Filter to select only 5 + year old transactions
+fiveplus %>% 
+  group_by(status) %>% 
+  summarise(count=n())
+```
 
 
 
@@ -314,11 +433,25 @@ bp_full%>%
 
 
 
+## Missing data
 
-
-
-
-
-
+```{r}
+oi%>%
+  mutate(act.status=ifelse(is.na(active),"Not Known",active))%>%
+  group_by(act.status)%>%
+    summarise(amount=sum(amount))%>%
+  ggplot(aes(x=amount, y=reorder(act.status,-amount), label=paste0(round(amount/1000000), " M")))+
+  geom_col(fill="dodgerblue4")+
+  geom_text(aes(x=ifelse(amount<0, amount+5000000, amount-5000000)), colour="white", angle =90)+
+  labs(title = "Open items by contract active status",
+       x="",
+       y="",
+       subtitle = "Not known because data missing from master data",
+       caption = "Source: Download from SAP")+
+  theme_classic()+
+  #theme(axis.text.x = element_text(angle = 90))+
+  coord_cartesian(clip = "off")+
+  annotation_custom(l, ymin = 2.75, ymax = 3.75, xmin=1.5e+08,xmax=2e+08)
+```
 
 
